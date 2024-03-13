@@ -177,23 +177,26 @@ async def jointhread(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def ListAllRepliesCommand(update: Update, context: ContextTypes.DEFAULT_TYPE):
     cursor.execute("SELECT user_id, content, reply_type FROM replies WHERE thread_id = ?", (Current_thread,)) 
     replieslist = cursor.fetchall()
-    for reply in replieslist:
-        users_ids, message, rtype = reply
-        cursor.execute("SELECT username FROM users WHERE user_id = ?", (users_ids,)) 
-        user_name = cursor.fetchall()
-        user_name = user_name[0][0]
-        if rtype == 2:
-            await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
-            #context.bot.send_document(chat_id=update.effective_chat.id, document=file_id)
-                    
-        elif rtype == 3:
-            await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
-            #context.bot.send_photo(chat_id=update.effective_chat.id, photo=file_id)
+    if replieslist:
+        for reply in replieslist:
+            users_ids, message, rtype = reply
+            cursor.execute("SELECT username FROM users WHERE user_id = ?", (users_ids,)) 
+            user_name = cursor.fetchall()
+            user_name = user_name[0][0]
+            if rtype == 2:
+                await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
+                #context.bot.send_document(chat_id=update.effective_chat.id, document=file_id)
+                        
+            elif rtype == 3:
+                await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
+                #context.bot.send_photo(chat_id=update.effective_chat.id, photo=file_id)
 
-        elif rtype == 1:
-            await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
-        else:
-            await update.message.reply_text(f"{users_ids} {user_name}'s reply is not available ")
+            elif rtype == 1:
+                await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
+            else:
+                await update.message.reply_text(f"{users_ids} {user_name}'s reply is not available ")
+    else:
+        await update.message.reply_text("No replies are available ")
 
 
 async def ReplyCommand(update: Update, context: ContextTypes.DEFAULT_TYPE):

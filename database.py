@@ -110,3 +110,4 @@ create_tables()
 
 conn = connect()
 cursor = conn.cursor()
+
