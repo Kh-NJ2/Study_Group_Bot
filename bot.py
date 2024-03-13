@@ -27,7 +27,7 @@ async def registerCommand(update : Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def startCommand(update : Update, context : ContextTypes.DEFAULT_TYPE):  
-    await update.message.reply_text("Hello")
+    await update.message.reply_text("Hello \nChoose Command from commands below:\n1. /register \n2. /createGroup \n3. /joinGroup \n4. /createThread \n5. /joinThread\n6. /listThreads \n7. /listReplies")
 
 
 async def CreateGroupCommand(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -102,6 +102,21 @@ async def createthread(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
     
 
+async def ListThreadsCommand(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Execute a SELECT query to fetch all thread names
+    cursor.execute('SELECT title, content FROM threads')
+        
+    # Fetch all the results
+    thread_names = cursor.fetchall()
+
+    # Print the thread names
+    if thread_names:
+        for thread_name in thread_names:
+            await update.message.reply_text(f"'{thread_name[0]}' \n {thread_name[1]}")
+
+    else:
+        await update.message.reply_text("No threads found.")
+
 
 async def JoinThreadCommand(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Great! Please enter the topic of the thread.")
@@ -133,20 +148,20 @@ async def jointhread(update: Update, context: ContextTypes.DEFAULT_TYPE):
             content = content[0]
             await update.message.reply_text(f"QUESTION:  '{content}'")
             
-            cursor.execute("SELECT user_id, content, reply_type, file_id FROM replies WHERE thread_id = ?", (thread_id,)) 
+            cursor.execute("SELECT user_id, content, reply_type FROM replies WHERE thread_id = ?", (thread_id,)) 
             replieslist = cursor.fetchall()
             for reply in replieslist:
-                users_ids, message, rtype, file_id = reply
+                users_ids, message, rtype = reply
                 cursor.execute("SELECT username FROM users WHERE user_id = ?", (users_ids,)) 
                 user_name = cursor.fetchall()
                 user_name = user_name[0][0]
                 if rtype == 2:
                     await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
-                    context.bot.send_document(chat_id=update.effective_chat.id, document=file_id)
+                    #context.bot.send_document(chat_id=update.effective_chat.id, document=file_id)
                     
                 elif rtype == 3:
                     await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
-                    context.bot.send_photo(chat_id=update.effective_chat.id, photo=file_id)
+                    #context.bot.send_photo(chat_id=update.effective_chat.id, photo=file_id)
 
                 elif rtype == 1:
                     await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
@@ -159,9 +174,30 @@ async def jointhread(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
+async def ListAllRepliesCommand(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    cursor.execute("SELECT user_id, content, reply_type FROM replies WHERE thread_id = ?", (Current_thread,)) 
+    replieslist = cursor.fetchall()
+    for reply in replieslist:
+        users_ids, message, rtype = reply
+        cursor.execute("SELECT username FROM users WHERE user_id = ?", (users_ids,)) 
+        user_name = cursor.fetchall()
+        user_name = user_name[0][0]
+        if rtype == 2:
+            await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
+            #context.bot.send_document(chat_id=update.effective_chat.id, document=file_id)
+                    
+        elif rtype == 3:
+            await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
+            #context.bot.send_photo(chat_id=update.effective_chat.id, photo=file_id)
+
+        elif rtype == 1:
+            await update.message.reply_text(f"{users_ids} {user_name}: {message} ")
+        else:
+            await update.message.reply_text(f"{users_ids} {user_name}'s reply is not available ")
+
 
 async def ReplyCommand(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if Current_thread is not None:
+    if Current_thread != -1:
         await update.message.reply_text("Type Your Reply")
         return GET_REPLY
     await update.message.reply_text("Join a Thread First")

@@ -1,7 +1,7 @@
 from telegram.ext import Updater, Application, CommandHandler, MessageHandler, ContextTypes, ConversationHandler, filters
 from typing import final
 
-from bot import startCommand, registerCommand, CreateGroupCommand, JoinGroupCommand, CreateThreadCommand, JoinThreadCommand, ReplyCommand
+from bot import startCommand, registerCommand, CreateGroupCommand, JoinGroupCommand, CreateThreadCommand, JoinThreadCommand, ReplyCommand, ListThreadsCommand, ListAllRepliesCommand
 from bot import text, error, create_group, join_group, createthread, jointhread, reply, threadTitle
 from bot import GET_CGROUP_NAME, GET_JGROUP_NAME, GET_CTHREAD_TOPIC, GET_JTHREAD_TOPIC, GET_REPLY, CREATE_THREAD
 
@@ -62,6 +62,8 @@ if __name__ == "__main__":
     app.add_handler(createG_handler)
     app.add_handler(joinG_handler)
     app.add_handler(createT_handler)
+    app.add_handler(CommandHandler("ListThreads", ListThreadsCommand))
+    app.add_handler(CommandHandler("listReplies", ListAllRepliesCommand))
     app.add_handler(joinT_handler)
     app.add_handler(reply_handler)
 
