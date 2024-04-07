@@ -6,7 +6,7 @@ from bot import text, error, create_group, join_group, createthread, jointhread,
 from bot import GET_CGROUP_NAME, GET_JGROUP_NAME, GET_CTHREAD_TOPIC, GET_JTHREAD_TOPIC, GET_REPLY, CREATE_THREAD
 
 
-Token : final = "6395649052:AAE0OUQ0HPfx-iK0U-j5H_1WuzuoAzptGAo"
+Token : final = "token"
 username : final = "@studygrpBot"
 
 if __name__ == "__main__":
